@@ -24,9 +24,9 @@ motor RF = motor(PORT18, ratio6_1);
 motor RB = motor(PORT20, ratio6_1);
 motor RM = motor(PORT19, ratio6_1);
 motor topIntake = motor(PORT6, ratio18_1);
-motor backIntake = motor(PORT12, ratio18_1);
+motor backIntake = motor(PORT12, ratio18_1, true);
 motor middleIntake = motor(PORT7, ratio18_1);
-motor frontIntake = motor(PORT5, ratio18_1);
+motor frontIntake = motor(PORT5, ratio18_1, true);
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
 /*                                                                           */
@@ -75,6 +75,24 @@ void usercontrol(void) {
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
+
+    //spin front intake up (middle goal)
+    if (controller r1) {
+      front intake forward
+      middle intake forward
+    }
+    // spin front intake into top goal
+    else if (controller r2) {
+      front intake forward
+      middle intake forward
+      top intake forward
+    }
+    if (controller l1) {
+      back intake forward
+    }
+    else if (controller l2) {
+      back intake reverse
+    }
 
     // ........................................................................
     // Insert user code here. This is where you use the joystick values to

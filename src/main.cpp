@@ -16,16 +16,17 @@ competition Competition;
 
 // define your global instances of motors and other devices here
 brain Brain;
-motor LF = motor();
-motor LB = motor();
-motor LM = motor();
-motor RF = motor();
-motor RB = motor();
-motor RM = motor();
-motor topIntake = motor();
-motor backIntake = motor();
-motor middleIntake = motor();
-motor frontIntake = motor();
+controller Controller1;
+motor LF = motor(PORT1, ratio6_1);
+motor LB = motor(PORT10, ratio6_1);
+motor LM = motor(PORT2, ratio6_1);
+motor RF = motor(PORT18, ratio6_1);
+motor RB = motor(PORT20, ratio6_1);
+motor RM = motor(PORT19, ratio6_1);
+motor topIntake = motor(PORT6, ratio18_1);
+motor backIntake = motor(PORT12, ratio18_1);
+motor middleIntake = motor(PORT7, ratio18_1);
+motor frontIntake = motor(PORT5, ratio18_1);
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
 /*                                                                           */

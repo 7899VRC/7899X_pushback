@@ -24,12 +24,26 @@ motor RF = motor(PORT18, ratio6_1);
 motor RB = motor(PORT20, ratio6_1);
 motor RM = motor(PORT19, ratio6_1);
 motor topIntake = motor(PORT6, ratio18_1);
-motor backIntake = motor(PORT12, ratio18_1, true);
+motor backIntake = motor(PORT12, ratio18_1);
 motor middleIntake = motor(PORT7, ratio18_1);
 motor frontIntake = motor(PORT5, ratio18_1);
 digital_out topPiston =  digital_out(Brain.ThreeWirePort.A);
-//digital_out matchLoadPiston = digital_out()
+digital_out sidePiston = digital_out(Brain.ThreeWirePort.H);
+motor_group leftSide = motor_group(LF, LB, LM);
+motor_group rightSide = motor_group(RF, RB, RM);
 
+void drive(int lspeed, int rspeed, int wt) {
+  leftSide.spin(forward, lspeed, pct);
+  rightSide.spin(forward, rspeed, pct);
+  wait(wt, msec);
+}
+
+void pistonControlTop() {
+  topPiston.set(true);
+}
+void pistonControlSide() {
+  sidePiston.set(true);
+}
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
 /*                                                                           */
@@ -75,13 +89,12 @@ void autonomous(void) {
 void usercontrol(void) {
   // User control code here, inside the loop
   while (1) {
+    int leftSpeed = Controller1.Axis3.position(pct) + Controller1.Axis1.position(pct);
+    int rightSpeed = Controller1.Axis3.position(pct) - Controller1.Axis1.position(pct);
+    drive (leftSpeed, rightSpeed, 10);
     // button to control the piston that controls if top intake spins into storage or into top goal
-    if (Controller1.ButtonX.pressing()) {
-      topPiston.set(true);
-    }
-    else {
-      topPiston.set(false);
-    }
+    Controller1.ButtonX.pressed(pistonControlTop);
+    Controller1.ButtonA.pressed(pistonControlSide);
     // midddle goal
     if (Controller1.ButtonR2.pressing()) {
       frontIntake.spin(forward, 100, pct);
@@ -102,17 +115,32 @@ void usercontrol(void) {
     // intake into storage
     if (Controller1.ButtonL1.pressing()) {
       backIntake.spin(forward, 100, pct);
-      middleIntake.spin(forward, 100, pct);
     }
     // remove from storage
     else if (Controller1.ButtonL2.pressing()) {
       backIntake.spin(reverse, 100, pct);
-      middleIntake.spin(reverse, 100, pct);
     }
     else {
       backIntake.stop();
+    }
+
+    //Test 
+    if (Controller1.ButtonA.pressing()) {
+      middleIntake.spin(forward, 100, pct);
+    }
+
+    else if (Controller1.ButtonY.pressing()) {
+      middleIntake.spin(reverse, 100, pct);
+    }
+
+    else {
       middleIntake.stop();
     }
+
+
+    // need to add one to move front intake down
+
+
     // ........................................................................
     // Insert user code here. This is where you use the joystick values to
     // update your motors, etc.

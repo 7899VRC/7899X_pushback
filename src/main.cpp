@@ -37,10 +37,12 @@ void drive(int lspeed, int rspeed, int wt) {
   rightSide.spin(forward, rspeed, pct);
   wait(wt, msec);
 }
-
+// controls top piston
 void pistonControlTop() {
   topPiston.set(true);
 }
+
+// controls side piston (goal intake)
 void pistonControlSide() {
   sidePiston.set(true);
 }
@@ -89,12 +91,16 @@ void autonomous(void) {
 void usercontrol(void) {
   // User control code here, inside the loop
   while (1) {
+    // --------------------- DRIVE CONTROL -----------------------
     int leftSpeed = Controller1.Axis3.position(pct) + Controller1.Axis1.position(pct);
     int rightSpeed = Controller1.Axis3.position(pct) - Controller1.Axis1.position(pct);
     drive (leftSpeed, rightSpeed, 10);
+
     // button to control the piston that controls if top intake spins into storage or into top goal
     Controller1.ButtonX.pressed(pistonControlTop);
     Controller1.ButtonA.pressed(pistonControlSide);
+
+    // ---------------------- INTAKE CONTROL --------------------
     // midddle goal
     if (Controller1.ButtonR2.pressing()) {
       frontIntake.spin(forward, 100, pct);
@@ -123,23 +129,6 @@ void usercontrol(void) {
     else {
       backIntake.stop();
     }
-
-    //Test 
-    if (Controller1.ButtonA.pressing()) {
-      middleIntake.spin(forward, 100, pct);
-    }
-
-    else if (Controller1.ButtonY.pressing()) {
-      middleIntake.spin(reverse, 100, pct);
-    }
-
-    else {
-      middleIntake.stop();
-    }
-
-
-    // need to add one to move front intake down
-
 
     // ........................................................................
     // Insert user code here. This is where you use the joystick values to

@@ -17,12 +17,12 @@ competition Competition;
 // define your global instances of motors and other devices here
 brain Brain;
 controller Controller1;
-motor LF = motor(PORT1, ratio6_1);
-motor LB = motor(PORT10, ratio6_1);
-motor LM = motor(PORT2, ratio6_1);
-motor RF = motor(PORT18, ratio6_1);
-motor RB = motor(PORT20, ratio6_1);
-motor RM = motor(PORT19, ratio6_1);
+motor LF = motor(PORT1, ratio6_1, true);
+motor LM = motor(PORT2, ratio6_1, true);
+motor LB = motor(PORT10, ratio6_1,  false);
+motor RF = motor(PORT18, ratio6_1, false);
+motor RM = motor(PORT19, ratio6_1, false);
+motor RB = motor(PORT20, ratio6_1, true);
 motor topIntake = motor(PORT6, ratio18_1);
 motor backIntake = motor(PORT12, ratio18_1);
 motor middleIntake = motor(PORT7, ratio18_1);
@@ -104,30 +104,39 @@ void usercontrol(void) {
     // midddle goal
     if (Controller1.ButtonR2.pressing()) {
       frontIntake.spin(forward, 100, pct);
-      middleIntake.spin(reverse, 100, pct);
+      //middleIntake.spin(reverse, 100, pct);
       topIntake.spin(forward, 100, pct);
     }
     // top goal
     else if (Controller1.ButtonR1.pressing()) {
       frontIntake.spin(forward, 100, pct);
-      middleIntake.spin(reverse, 100, pct);
+      // middleIntake.spin(reverse, 100, pct);
       topIntake.spin(reverse, 100, pct);
     }
     else {
       frontIntake.stop();
-      middleIntake.stop();
+      // middleIntake.stop();
       topIntake.stop();
     }
     // intake into storage
     if (Controller1.ButtonL1.pressing()) {
       backIntake.spin(forward, 100, pct);
+      middleIntake.spin(reverse, 100, pct);
     }
     // remove from storage
     else if (Controller1.ButtonL2.pressing()) {
       backIntake.spin(reverse, 100, pct);
+      middleIntake.spin(forward, 100, pct);
     }
     else {
       backIntake.stop();
+      middleIntake.stop();
+    }
+    // go from back to front intake
+    if (Controller1.ButtonL1.pressing() && Controller1.ButtonL2.pressing()) {
+      backIntake.spin(forward, 100, pct);
+      middleIntake.spin(reverse, 100, pct);
+      frontIntake.spin(reverse, 100, pct);
     }
 
     // ........................................................................

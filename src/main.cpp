@@ -31,6 +31,8 @@ digital_out topPiston =  digital_out(Brain.ThreeWirePort.A);
 digital_out sidePiston = digital_out(Brain.ThreeWirePort.H);
 motor_group leftSide = motor_group(LF, LB, LM);
 motor_group rightSide = motor_group(RF, RB, RM);
+bool topPistonExtended = false;
+bool sidePistonExtended = false;
 
 void drive(int lspeed, int rspeed, int wt) {
   leftSide.spin(forward, lspeed, pct);
@@ -39,13 +41,16 @@ void drive(int lspeed, int rspeed, int wt) {
 }
 // controls top piston
 void pistonControlTop() {
-  topPiston.set(true);
+  topPistonExtended = !topPistonExtended;
+  topPiston.set(topPistonExtended);
 }
 
 // controls side piston (goal intake)
 void pistonControlSide() {
-  sidePiston.set(true);
+  sidePistonExtended = !sidePistonExtended;
+  sidePiston.set(sidePistonExtended);
 }
+
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
 /*                                                                           */
@@ -90,16 +95,14 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
+  Controller1.ButtonX.pressed(pistonControlTop);
+  Controller1.ButtonA.pressed(pistonControlSide);
   while (1) {
     // --------------------- DRIVE CONTROL -----------------------
     int leftSpeed = Controller1.Axis3.position(pct) + Controller1.Axis1.position(pct);
     int rightSpeed = Controller1.Axis3.position(pct) - Controller1.Axis1.position(pct);
     drive (leftSpeed, rightSpeed, 10);
-
     // button to control the piston that controls if top intake spins into storage or into top goal
-    Controller1.ButtonX.pressed(pistonControlTop);
-    Controller1.ButtonA.pressed(pistonControlSide);
-
     // ---------------------- INTAKE CONTROL --------------------
     // midddle goal
     if (Controller1.ButtonR2.pressing()) {

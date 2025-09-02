@@ -33,20 +33,17 @@ motor_group leftSide = motor_group(LF, LB, LM);
 motor_group rightSide = motor_group(RF, RB, RM);
 bool topPistonExtended = false;
 bool sidePistonExtended = false;
-double leftEncoders = leftSide.position(degrees);
-double rightEncoders = rightSide.position(degrees);
-double currentPosition = (leftEncoders + rightEncoders) / 2;
 // pid constants
 double pi = 3.1415926;
 double diameter = 3.25;
-double g = 36/48; // gear ratio 
+double g = 36.0/48.0; // gear ratio 
 
 void drive(int lspeed, int rspeed, int wt) {
   leftSide.spin(forward, lspeed, pct);
   rightSide.spin(forward, rspeed, pct);
   wait(wt, msec);
 }
-// controls top piston
+// controls top pistons
 void pistonControlTop() {
   topPistonExtended = !topPistonExtended;
   topPiston.set(topPistonExtended);
@@ -59,29 +56,35 @@ void pistonControlSide() {
 }
 
 void inchDrive(float target) {
-  float kp = 2;
-  float kd = 0;
-  float error;
-  leftSide.resetPosition();
-  rightSide.resetPosition();
-  float x = 0;
-  float accuracy = 0.5;
-  float prevError = 0;
-  float derivative;
-  float output;
-  int time = 10;
-  while (error > accuracy) {
-    x = (currentPosition * pi * diameter) / 360;
-    error = (target - x);
-    derivative = (error - prevError) / time;
-    output = kp * error + (kd * derivative);
-    leftSide.spin(forward, error, pct);
-    rightSide.spin(forward, error, pct);
-    prevError = error; 
-    wait(time, msec);
+  while (1) {
+    double leftEncoders = leftSide.position(degrees);
+    double rightEncoders = rightSide.position(degrees);
+    double currentPosition = (leftEncoders + rightEncoders) / 2;
+    float kp = 2.0;
+    float kd = 0.0;
+    float error = 5.0;
+    leftSide.resetPosition();
+    rightSide.resetPosition();
+    float x = 0.0;
+    float accuracy = 0.5;
+    float prevError = 0.0;
+    float derivative;
+    float output;
+    int time = 10;
+    while (error > accuracy) {
+      x = (currentPosition * pi * diameter) / 360;
+      error = (target - x);
+      derivative = (error - prevError) / time;
+      output = kp * error + (kd * derivative);
+      leftSide.spin(forward, error, pct);
+      rightSide.spin(forward, error, pct);
+      prevError = error; 
+      wait(time, msec);
+    }
+    leftSide.stop();
+    rightSide.stop();
   }
-  leftSide.stop();
-  rightSide.stop();
+  
 }
 
 void pre_auton(void) {
@@ -126,7 +129,7 @@ void usercontrol(void) {
     }
     // intake into storage
     if (Controller1.ButtonL1.pressing()) {
-      backIntake.spin(forward, 100, pct);
+      backIntake.spin(forward, 50, pct);
       middleIntake.spin(reverse, 100, pct);
     }
     // remove from storage

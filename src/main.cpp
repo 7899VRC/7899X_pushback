@@ -105,8 +105,9 @@ void usercontrol(void) {
   Controller1.ButtonA.pressed(pistonControlSide);
   while (1) {
     // --------------------- DRIVE CONTROL -----------------------
-    int leftSpeed = Controller1.Axis3.position(pct) + Controller1.Axis1.position(pct);
-    int rightSpeed = Controller1.Axis3.position(pct) - Controller1.Axis1.position(pct);
+    double sensitivity = 0.5;
+    int leftSpeed = (Controller1.Axis3.position(pct) + Controller1.Axis1.position(pct)) * sensitivity;
+    int rightSpeed = (Controller1.Axis3.position(pct) - Controller1.Axis1.position(pct)) * sensitivity;
     drive (leftSpeed, rightSpeed, 10);
     // button to control the piston that controls if top intake spins into storage or into top goal
     // ---------------------- INTAKE CONTROL --------------------
@@ -129,7 +130,7 @@ void usercontrol(void) {
     }
     // intake into storage
     if (Controller1.ButtonL1.pressing()) {
-      backIntake.spin(forward, 50, pct);
+      backIntake.spin(forward, 20, pct);
       middleIntake.spin(reverse, 100, pct);
     }
     // remove from storage

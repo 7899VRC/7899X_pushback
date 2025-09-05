@@ -148,6 +148,10 @@ void usercontrol(void) {
       middleIntake.spin(reverse, 100, pct);
       frontIntake.spin(reverse, 100, pct);
     }
+    // outtake from front intake 
+    else if (Controller1.ButtonR2.pressing() && Controller1.ButtonR1.pressing()) {
+      frontIntake.spin(reverse, 100, pct);
+    }
 
     // ........................................................................
     // Insert user code here. This is where you use the joystick values to

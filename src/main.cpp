@@ -69,66 +69,50 @@ void DriveVolts(double lspeed, double rspeed, double multiplier, int wt)
   task::sleep(wt);
 }
 
-void inchDrive(double target) {
-  const double kp = 4.7;
-  const double kd = 0.7;
-  const double accuracy = 0.25;
-  const int loopMs = 10;
-  const double dt = loopMs / 1000.0;
-  const double wheelDiameter = 3.25;
-  const double gear_m2w = 0.75;
-  const double outCap = 60;
-  const double outMin = 10;
-  const double velThresh_inps = 0.5;
-  const int settleMs = 200;
-  int goodMs = 0;
-  
-  leftSide.resetPosition();
-  rightSide.resetPosition();
-  double prevErr = 0;
-  
-  while (true) {
-      double leftDeg  = leftSide.position(degrees);
-      double rightDeg = rightSide.position(degrees);
-      double motorDegAvg = 0.5 * (leftDeg + rightDeg);
-      double wheelRev = (motorDegAvg / 360.0) * gear_m2w;
-      double x = wheelRev * (M_PI * wheelDiameter);
-  
-      double error = target - x;
-      double d_inps = (error - prevErr) / dt;
-      double out = kp * error + kd * d_inps;
-  
-      if (fabs(error) > accuracy && fabs(out) < outMin) {
-        out = (out >= 0 ? outMin : -outMin);
-      }
-  
-      if (out >  outCap) out =  outCap;
-      if (out < -outCap) out = -outCap;
-  
-      leftSide.spin(forward,  out, pct);
-      rightSide.spin(forward, out, pct);
-  
-      if (fabs(error) <= accuracy && fabs(d_inps) <= velThresh_inps) {
-        goodMs += loopMs;
-        if (goodMs >= settleMs) break;
-      } else {
-        goodMs = 0;
-      }
-  
-      prevErr = error;
-      wait(loopMs, msec);
+void inchDrive(float target, int timeout = 1500, float kp = 4.7)
+{
+  timer t2;
+  t2.reset();
+  float x = 0.0;
+  float tolerance = 1;
+  float accuracy = 1;
+  float ki = 0;
+  float error = target - x;
+  float speed = error * kp;
+  float integral = 0;
+  float prevError = target;
+  float derivative = 0;
+  float kd = 1.5;
+  RF.setPosition(0.0, rev);
+  while (t2.time(msec) < timeout)
+  {
+    x = RF.position(rev) * pi * diameter * g;
+    error = target - x;
+
+
+    if (fabs(error) < tolerance)
+    {
+      integral += error;
     }
-  
-    leftSide.stop(brake);
-    rightSide.stop(brake);
+    derivative = error - prevError;
+    prevError = error;
+    speed = error * kp + integral * ki + derivative * kd;
+    DriveVolts(speed, speed, 1, 10);
+    Controller1.Screen.setCursor(1, 1);
+    Controller1.Screen.clearLine();
+    Controller1.Screen.print(error);
   }
+  leftSide.setStopping(brake);
+  rightSide.setStopping(brake);
+  wait(10, msec);
+}
   
 void gyroturnAbs(double target, int timeout = 1500) {
     timer t1;
     t1.reset();
-    float kp = 4.5;
+    float kp = 1.4;
     float ki = 0;
-    float kd = 0.8;
+    float kd = 0.3;
     float integral = 0;
     float integralTolerance = 3;
     // float integralMax = 100;
@@ -205,25 +189,72 @@ void inchDrive(float target) {
 }
 */
 void pre_auton(void) {
-
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
 
 void autonomous(void) {
+  Inertial.resetRotation();
+  gyroturnAbs(84);
+  /*
   leftSide.setStopping(brake);
   rightSide.setStopping(brake);
-  frontIntake.spin(forward, 150, pct);
+  inchDrive(25, 1000, 4.8);
+  gyroturnAbs(24);
+  frontIntake.spin(forward, 100, pct);
   middleIntake.spin(forward, 100, pct);
-  backIntake.spin(reverse, 100, pct);
-  inchDrive(40);
-  gyroturnAbs(-61);
-  inchDrive(13);
+  inchDrive(9.5);
+  inchDrive(5);
+  gyroturnAbs(-36);
+  inchDrive(15.5);
+  frontIntake.spin(reverse, 100, pct);
+  middleIntake.spin(reverse, 100, pct);
+  wait(1000, msec);
+  middleIntake.stop();
+  inchDrive(-47);
+  */
+  
+  /*
+  leftSide.setStopping(brake);
+  rightSide.setStopping(brake);
+  inchDrive(25);
+  gyroturnAbs(38);
+  frontIntake.spin(forward, 100, pct);
+  middleIntake.spin(forward, 100, pct);
+  inchDrive(9.5);
+  inchDrive(5);
+  gyroturnAbs(-55);
+  inchDrive(15);
   frontIntake.spin(reverse, 100, pct);
   middleIntake.spin(reverse, 70, pct);
-  wait(1500, msec);
+  wait(1000, msec);
   middleIntake.stop();
-  inchDrive(-40);
+  inchDrive(-47);
+  gyroturnAbs(20);
+  sidePiston.set(true);
+  inchDrive(-20);
+  backIntake.spin(forward);
+  wait(1000, msec);
+  backIntake.stop();
+  */
+
+
+  // leftSide.setStopping(brake);
+  // rightSide.setStopping(brake);
+  // frontIntake.spin(forward, 150, pct);
+  // middleIntake.spin(forward, 100, pct);
+  // backIntake.spin(reverse, 100, pct);
+  // inchDrive(40);
+  // gyroturnAbs(-61);
+  // inchDrive(13);
+  // frontIntake.spin(reverse, 100, pct);
+  // middleIntake.spin(reverse, 70, pct);
+  // wait(2000, msec);
+  // middleIntake.stop();
+  // inchDrive(-47);
+  // gyroturnAbs(20);
+  // sidePiston.set(true);
+
 }
 
 void usercontrol(void) {

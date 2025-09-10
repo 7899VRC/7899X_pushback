@@ -195,7 +195,29 @@ void pre_auton(void) {
 
 void autonomous(void) {
   Inertial.resetRotation();
-  gyroturnAbs(84);
+  leftSide.setStopping(brake);
+  rightSide.setStopping(brake);
+  inchDrive(25, 700, 4.8);
+  gyroturnAbs(30, 500);
+  frontIntake.spin(forward, 100, pct);
+  middleIntake.spin(forward, 100, pct);
+  backIntake.spin(reverse, 100, pct);
+  inchDrive(10, 450);
+  gyroturnAbs(133);
+  inchDrive(38);
+  gyroturnAbs(5);
+  sidePiston.set(true);
+  wait(700, msec);
+  backIntake.spin(reverse, 100, pct);
+  inchDrive(-32);
+  gyroturnAbs(3);
+  inchDrive(29.5);
+  backIntake.spin(reverse, 15, pct);
+  middleIntake.spin(reverse, 100, pct);
+  frontIntake.spin(forward, 100, pct);
+  topIntake.spin(reverse, 100, pct);
+
+
   /*
   leftSide.setStopping(brake);
   rightSide.setStopping(brake);
@@ -263,7 +285,7 @@ void usercontrol(void) {
   Controller1.ButtonA.pressed(pistonControlSide);
   while (1) {
     // --------------------- DRIVE CONTROL -----------------------
-    double sensitivity = 0.5;
+    double sensitivity = 0.7;
     int leftSpeed = (Controller1.Axis3.position(pct) + Controller1.Axis1.position(pct)) * sensitivity;
     int rightSpeed = (Controller1.Axis3.position(pct) - Controller1.Axis1.position(pct)) * sensitivity;
     drive (leftSpeed, rightSpeed, 10);

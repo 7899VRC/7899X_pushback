@@ -204,14 +204,15 @@ void autonomous(void) {
   backIntake.spin(reverse, 100, pct);
   inchDrive(10, 450);
   gyroturnAbs(133);
-  inchDrive(38);
+  // driving to the goal
+  inchDrive(38.5);
   gyroturnAbs(5);
   sidePiston.set(true);
   wait(700, msec);
   backIntake.spin(reverse, 100, pct);
-  inchDrive(-32);
+  inchDrive(-40);
   gyroturnAbs(3);
-  inchDrive(29.5);
+  inchDrive(27.5);
   backIntake.spin(reverse, 15, pct);
   middleIntake.spin(reverse, 100, pct);
   frontIntake.spin(forward, 100, pct);
